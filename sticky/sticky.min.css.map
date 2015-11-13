@@ -1,0 +1,9 @@
+{
+	"version": 3,
+	"file": "sticky.min.css",
+	"sources": [
+		"sticky.scss"
+	],
+	"mappings": "AAAA,YAAY,AAAC,CACZ,QAAQ,CAAE,KAAM,CAChB,GAAG,CAAE,CAAE,CACP,IAAI,CAAE,CAAE,CACR,UAAU,CAAE,GAAG,CAAC,IAAG,CAAC,0BAAY,CAChC,MAAM,CAAE,IAAK,CACb,SAAS,CAAE,aAAU,CAIrB,AAVD,YAAY,AAOV,cAAc,AAAC,CACf,OAAO,CAAE,KAAM,CACf",
+	"names": []
+}
