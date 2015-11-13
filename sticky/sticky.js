@@ -70,6 +70,9 @@
             var classes = this.options.classes;
 
             $(this.cloneElement).addClass( classes.default + ' ' + classes.inactive );
+            $(this.cloneElement).css({
+                'transform': 'translateY(' + '-' + this.options.elementHeight + 'px)'
+            });
         },
 
         prependCloneElement: function() {
