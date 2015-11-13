@@ -23,6 +23,21 @@
         this.init();
     }
 
+    function debounce(func, wait, immediate) { // https://davidwalsh.name/javascript-debounce-function
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            var later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            var callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    };
+
     Plugin.prototype = {
 
         init: function() {
@@ -30,7 +45,7 @@
             this.setOptions();
             this.initCloneElement();
             this.prependCloneElement();
-        	this.addListeners();
+            this.addListeners();
         },
 
         setOptions: function() {
@@ -64,20 +79,27 @@
 
         addListeners: function() {
 
-        	var self = this;
+            var self = this;
 
-        	$(document).on( 'scroll', function(ev) {
+            var update = debounce(function() {
 
-        		if ( window.pageYOffset > self.options.elementHeight ) {
+                self.setOptions();
+            }, 250);
 
-        			self.doSticky();
-        		}
+            $(window).on( 'resize', update );
+
+            $(document).on( 'scroll', function(ev) {
+
+                if ( window.pageYOffset > self.options.elementHeight ) {
+
+                    self.doSticky();
+                }
 
                 if ( window.pageYOffset < self.options.tolerance + self.options.elementHeight ) {
 
                     self.undoSticky();
                 }
-        	});
+            });
         },
 
         doSticky: function() {
