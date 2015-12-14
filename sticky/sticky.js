@@ -109,7 +109,6 @@
 
         doSticky: function() {
 
-            console.log("DOING SSTICKY");
             $(this.element).css({
                 'top': '-' + this.options.elementHeight + 'px'
             });
