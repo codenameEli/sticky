@@ -5,7 +5,7 @@
             'elementHeight': 0,
             'tolerance': 0,
             'classes': {
-                'default': 'sticky-copy',
+                'default': 'sticky-element',
                 'active': 'sticky-active',
                 'inactive': 'sticky-inactive',
             },
@@ -43,41 +43,39 @@
         init: function() {
 
             this.setOptions();
-            this.initCloneElement();
-            this.prependCloneElement();
+            this.setElementAttributes();
+            this.initCompensationElement();
             this.addListeners();
         },
 
         setOptions: function() {
 
             this.options.elementHeight = $(this.element).height();
-            this.options.tolerance = $(this.element).height() * 2;
+            this.options.tolerance = this.options.tolerance ? this.options.tolerance : $(this.element).height() * 2;
         },
 
-        createCloneElement: function() {
+        setElementAttributes: function() {
 
-            this.cloneElement = $(this.element).clone()[0];
+            $(this.element).addClass( this.options.classes.default );
         },
 
-        initCloneElement: function() {
+        createCompensationElement: function() {
 
-            this.createCloneElement();
-            this.addCloneElementAttrs();
+            this.compensationElement = '.sticky-compensation-element';
+            $('body').prepend( '<div class="sticky-compensation-element"></div>' );
         },
 
-        addCloneElementAttrs: function() {
+        initCompensationElement: function() {
+
+            this.createCompensationElement();
+            this.addCompensationElementAttrs();
+        },
+
+        addCompensationElementAttrs: function() {
 
             var classes = this.options.classes;
 
-            $(this.cloneElement).addClass( classes.default + ' ' + classes.inactive );
-            $(this.cloneElement).css({
-                'transform': 'translateY(' + '-' + this.options.elementHeight + 'px)'
-            });
-        },
-
-        prependCloneElement: function() {
-
-            $('body').prepend(this.cloneElement);
+            $(this.compensationElement).addClass( classes.inactive );
         },
 
         addListeners: function() {
@@ -90,42 +88,63 @@
             }, 250);
 
             $(window).on( 'resize', update );
+            $(document).on( 'ready', this.determineStickyState.bind(this) );
+            $(document).on( 'scroll', this.determineStickyState.bind(this) );
+        },
 
-            $(document).on( 'scroll', function(ev) {
+        determineStickyState: function() {
 
-                if ( window.pageYOffset > self.options.elementHeight ) {
+            if ( window.pageYOffset > this.options.tolerance + this.options.elementHeight ) {
 
-                    self.doSticky();
-                }
+                if ( $(this.element).hasClass('sticky-active') ) { return; }
+                this.doSticky();
+            }
 
-                if ( window.pageYOffset < self.options.tolerance + self.options.elementHeight ) {
+            if ( window.pageYOffset < this.options.tolerance + this.options.elementHeight ) {
 
-                    self.undoSticky();
-                }
-            });
+                if ( $(this.element).hasClass('sticky-inactive') ) { return; }
+                this.undoSticky();
+            }
         },
 
         doSticky: function() {
 
-            $(this.cloneElement).css({
-                'transform': 'translateY(0)'
+            console.log("DOING SSTICKY");
+            $(this.element).css({
+                'top': '-' + this.options.elementHeight + 'px'
             });
-            $(this.cloneElement).removeClass( this.options.classes.inactive );
-            $(this.cloneElement).addClass( this.options.classes.active );
+
+            $(this.compensationElement).removeClass( this.options.classes.inactive );
+            $(this.compensationElement).addClass( this.options.classes.active );
+            $(this.element).removeClass( this.options.classes.inactive );
+            $(this.element).addClass( this.options.classes.active );
+
+            $(this.compensationElement).css({
+                'height': this.options.elementHeight + 'px',
+            });
+
+            $(this.element).css({
+                'top': '0'
+            });
         },
 
         undoSticky: function() {
 
-            $(this.cloneElement).css({
-                'transform': 'translateY(' + '-' + this.options.elementHeight + 'px)'
+            $(this.compensationElement).removeClass( this.options.classes.active );
+            $(this.compensationElement).addClass( this.options.classes.inactive );
+            $(this.element).addClass( this.options.classes.inactive );
+            $(this.element).removeClass( this.options.classes.active );
+
+            $(this.element).css({
+                'top': '-' + this.options.elementHeight + 'px'
             });
-            $(this.cloneElement).removeClass( this.options.classes.active );
-            $(this.cloneElement).addClass( this.options.classes.inactive );
+
+            $(this.compensationElement).css({
+                'height': '0',
+            });
         },
     };
 
-    // A really lightweight plugin wrapper around the constructor,
-    // preventing against multiple instantiations
     $.fn[pluginName] = function ( options ) {
         return this.each(function () {
             if (!$.data(this, "plugin_" + pluginName)) {

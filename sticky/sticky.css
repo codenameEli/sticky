@@ -1,11 +1,11 @@
-.sticky-copy {
-  position: fixed;
+.sticky-element {
   top: 0;
   left: 0;
-  transition: all 0.2s cubic-bezier(0, 0, 0.2, 1);
-  height: auto;
+  z-index: 999;
   transform: translateZ(0); }
-  .sticky-copy.sticky-active {
-    display: block; }
+  .sticky-element.sticky-active {
+    position: fixed; }
+  .sticky-element.sticky-inactive {
+    position: initial; }
 
 /*# sourceMappingURL=sticky.css.map */
