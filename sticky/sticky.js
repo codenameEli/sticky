@@ -4,6 +4,7 @@
         defaults = {
             'elementHeight': 0,
             'tolerance': 0,
+            'disableWidth': null,
             'classes': {
                 'default': 'sticky-element',
                 'active': 'sticky-active',
@@ -20,6 +21,8 @@
         this._defaults = defaults;
         this._name = pluginName;
 
+        if ( window.innerWidth <= this.options.disableWidth ) { return; }
+        console.log("STILL HERE");
         this.init();
     }
 
