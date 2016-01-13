@@ -6,6 +6,6 @@
   .sticky-element.sticky-active {
     position: fixed; }
   .sticky-element.sticky-inactive {
-    position: initial; }
+    position: relative; }
 
 /*# sourceMappingURL=sticky.css.map */
