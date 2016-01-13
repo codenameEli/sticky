@@ -1,12 +1,12 @@
 .sticky-element {
-	top: 0;
-	left: 0;
-	z-index: 999;
-	transform: translateZ(0);
-	&.sticky-active {
-		position: fixed;
-	}
-	&.sticky-inactive {
-		position: initial;
-	}
+    top: 0;
+    left: 0;
+    z-index: 999;
+    transform: translateZ(0);
+    &.sticky-active {
+        position: fixed;
+    }
+    &.sticky-inactive {
+        position: relative;
+    }
 }
