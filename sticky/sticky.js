@@ -1,5 +1,4 @@
 ;(function ( $, window, document, undefined ) {
-
     var pluginName = "sticky",
         defaults = {
             'elementHeight': 0,
@@ -12,7 +11,7 @@
             },
         };
 
-    function Plugin( element, options ) {
+    function Sticky( element, options ) {
 
         this.element = element;
 
@@ -22,7 +21,7 @@
         this._name = pluginName;
 
         if ( window.innerWidth <= this.options.disableWidth ) { return; }
-        console.log("STILL HERE");
+
         this.init();
     }
 
@@ -41,7 +40,7 @@
         };
     };
 
-    Plugin.prototype = {
+    Sticky.prototype = {
 
         init: function() {
 
@@ -60,6 +59,7 @@
         setElementAttributes: function() {
 
             $(this.element).addClass( this.options.classes.default );
+            $(this.element).addClass( this.options.classes.inactive ); // Element is inactive onload
         },
 
         createCompensationElement: function() {
@@ -95,6 +95,11 @@
             $(document).on( 'scroll', this.determineStickyState.bind(this) );
         },
 
+        updateTolerance: function(num) {
+
+            this.options.tolerance = num;
+        },
+
         determineStickyState: function() {
 
             if ( window.pageYOffset > this.options.tolerance + this.options.elementHeight ) {
@@ -111,7 +116,6 @@
         },
 
         doSticky: function() {
-
             $(this.element).css({
                 'top': '-' + this.options.elementHeight + 'px'
             });
@@ -131,13 +135,14 @@
         },
 
         undoSticky: function() {
-
             $(this.compensationElement).removeClass( this.options.classes.active );
             $(this.compensationElement).addClass( this.options.classes.inactive );
             $(this.element).addClass( this.options.classes.inactive );
             $(this.element).removeClass( this.options.classes.active );
 
-            $(this.element).css({
+            console.log(this.element);
+
+            $(this.compensationElement).css({
                 'top': '-' + this.options.elementHeight + 'px'
             });
 
@@ -147,13 +152,9 @@
         },
     };
 
-    $.fn[pluginName] = function ( options ) {
-        return this.each(function () {
-            if (!$.data(this, "plugin_" + pluginName)) {
-                $.data(this, "plugin_" + pluginName,
-                new Plugin( this, options ));
-            }
-        });
-    };
+    $.fn.sticky = function(options) {
+
+        return new Sticky( this, options );
+    }
 
 })( jQuery, window, document );
