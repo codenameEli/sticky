@@ -4,6 +4,7 @@
             'elementHeight': 0,
             'tolerance': 0,
             'disableWidth': null,
+            'prependCompensationElementTo': null,
             'classes': {
                 'default': 'sticky-element',
                 'active': 'sticky-active',
@@ -53,7 +54,18 @@
         setOptions: function() {
 
             this.options.elementHeight = $(this.element).height();
-            this.options.tolerance = this.options.tolerance ? this.options.tolerance : $(this.element).height() * 2;
+            this.options.tolerance = this.options.tolerance ? this.options.tolerance : $(this.element).height();
+            this.options.start = this.getStartPosition();
+            this.options.end = this.getEndPosition();
+            this.lastOffset = 0;
+        },
+
+        getStartPosition: function() {
+            return $(this.element).offset().top;
+        },
+
+        getEndPosition: function() {
+            return $(this.element).offset().top + $(this.element).height();
         },
 
         setElementAttributes: function() {
@@ -65,7 +77,7 @@
         createCompensationElement: function() {
 
             this.compensationElement = '.sticky-compensation-element';
-            $('body').prepend( '<div class="sticky-compensation-element"></div>' );
+            $(this.element).before( '<div class="sticky-compensation-element"></div>' );
         },
 
         initCompensationElement: function() {
@@ -84,7 +96,6 @@
         addListeners: function() {
 
             var self = this;
-
             var update = debounce(function() {
 
                 self.setOptions();
@@ -101,18 +112,24 @@
         },
 
         determineStickyState: function() {
+            var offset = window.pageYOffset;
 
-            if ( window.pageYOffset > this.options.tolerance + this.options.elementHeight ) {
+            if (offset > this.lastOffset){ // Scrolling down
 
-                if ( $(this.element).hasClass('sticky-active') ) { return; }
-                this.doSticky();
+                if ( window.pageYOffset > this.options.tolerance ) {
+
+                    if ( $(this.element).hasClass('sticky-active') ) { return; }
+                    this.doSticky();
+                }
+            } else { // Scrolling up
+
+                if ( window.pageYOffset < this.options.tolerance ) {
+
+                    if ( $(this.element).hasClass('sticky-inactive') ) { return; }
+                    this.undoSticky();
+                }
             }
-
-            if ( window.pageYOffset < this.options.tolerance + this.options.elementHeight ) {
-
-                if ( $(this.element).hasClass('sticky-inactive') ) { return; }
-                this.undoSticky();
-            }
+            this.lastOffset = offset;
         },
 
         doSticky: function() {
@@ -139,8 +156,6 @@
             $(this.compensationElement).addClass( this.options.classes.inactive );
             $(this.element).addClass( this.options.classes.inactive );
             $(this.element).removeClass( this.options.classes.active );
-
-            console.log(this.element);
 
             $(this.compensationElement).css({
                 'top': '-' + this.options.elementHeight + 'px'
